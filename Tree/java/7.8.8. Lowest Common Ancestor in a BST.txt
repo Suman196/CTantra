@@ -1,0 +1,66 @@
+
+package q31051;
+
+import java.util.*;
+
+class Node {
+    int data;
+    Node left, right;
+
+    Node(int val) {
+        data = val;
+        left = null;
+        right = null;
+    }
+}
+
+public class CTJ31051 {
+
+    static Node insert(Node root, int val) {
+        if (root == null)
+            return new Node(val);
+
+        if (val < root.data)
+            root.left = insert(root.left, val);
+        else
+            root.right = insert(root.right, val);
+
+        return root;
+    }
+
+    static int findLCA(Node root, int n1, int n2) {
+        while (root != null) {
+
+            if (n1 < root.data && n2 < root.data)
+                root = root.left;
+
+            else if (n1 > root.data && n2 > root.data)
+                root = root.right;
+
+            else
+                return root.data;
+        }
+
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+
+        Node root = null;
+
+        for (int i = 0; i < n; i++) {
+            int val = sc.nextInt();
+            root = insert(root, val);
+        }
+
+        int n1 = sc.nextInt();
+        int n2 = sc.nextInt();
+
+        System.out.println(findLCA(root, n1, n2));
+
+        sc.close();
+    }
+}

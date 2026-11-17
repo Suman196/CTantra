@@ -1,0 +1,145 @@
+
+package q73775;
+
+import java.util.*;
+
+class Node {
+    int key;
+    Node left, right;
+    int height;
+
+    Node(int val) {
+        key = val;
+        left = null;
+        right = null;
+        height = 1;
+    }
+}
+
+public class CTJ73775 {
+
+    static int height(Node root) {
+        if (root == null)
+            return 0;
+
+        return root.height;
+    }
+
+    static int getBalance(Node root) {
+        if (root == null)
+            return 0;
+
+        return height(root.left) - height(root.right);
+    }
+
+    // Right rotation: LL case
+    static Node rightRotate(Node y) {
+        Node x = y.left;
+        Node T2 = x.right;
+
+        x.right = y;
+        y.left = T2;
+
+        y.height = 1 + Math.max(height(y.left), height(y.right));
+        x.height = 1 + Math.max(height(x.left), height(x.right));
+
+        return x;
+    }
+
+    // Left rotation: RR case
+    static Node leftRotate(Node x) {
+        Node y = x.right;
+        Node T2 = y.left;
+
+        y.left = x;
+        x.right = T2;
+
+        x.height = 1 + Math.max(height(x.left), height(x.right));
+        y.height = 1 + Math.max(height(y.left), height(y.right));
+
+        return y;
+    }
+
+    static Node insert(Node root, int key, StringBuilder rotation) {
+
+        // Normal BST insertion
+        if (root == null)
+            return new Node(key);
+
+        if (key < root.key)
+            root.left = insert(root.left, key, rotation);
+        else
+            root.right = insert(root.right, key, rotation);
+
+        // Update height
+        root.height = 1 + Math.max(height(root.left), height(root.right));
+
+        // Calculate balance factor
+        int balance = getBalance(root);
+
+        // LL case
+        if (balance > 1 && key < root.left.key) {
+            rotation.setLength(0);
+            rotation.append("LL");
+            return rightRotate(root);
+        }
+
+        // RR case
+        if (balance < -1 && key > root.right.key) {
+            rotation.setLength(0);
+            rotation.append("RR");
+            return leftRotate(root);
+        }
+
+        // LR case
+        if (balance > 1 && key > root.left.key) {
+            rotation.setLength(0);
+            rotation.append("LR");
+            root.left = leftRotate(root.left);
+            return rightRotate(root);
+        }
+
+        // RL case
+        if (balance < -1 && key < root.right.key) {
+            rotation.setLength(0);
+            rotation.append("RL");
+            root.right = rightRotate(root.right);
+            return leftRotate(root);
+        }
+
+        return root;
+    }
+
+    static void inorder(Node root) {
+        if (root == null)
+            return;
+
+        inorder(root.left);
+        System.out.print(root.key + " ");
+        inorder(root.right);
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+
+        Node root = null;
+
+        for (int i = 0; i < n; i++) {
+            int key = sc.nextInt();
+
+            StringBuilder rotation = new StringBuilder();
+
+            root = insert(root, key, rotation);
+
+            if (rotation.length() > 0)
+                System.out.println(rotation);
+
+            inorder(root);
+            System.out.println();
+        }
+
+        sc.close();
+    }
+}
